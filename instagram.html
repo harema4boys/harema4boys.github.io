@@ -4,22 +4,50 @@
 </head>
 <body>
     <script>
-        const usernameOrId = "47223550293"; // or real username
-        const apiUrl = `https://www.instagram.com/api/v1/users/web_profile_info/?username=${usernameOrId}`;
+        async function getUsername() {
+          const userInput = "47223550293"; // ← change to actual username like "nasa" if possible
+          // If it's really a numeric ID, this endpoint won't work without auth → see alternatives below
         
-        fetch(`https://cors-anywhere.herokuapp.com/${apiUrl}`, {   // or better proxy
-          headers: {
-            'User-Agent': 'Mozilla/5.0 ... Instagram ...',
-            'X-IG-App-ID': '936619743392459'
+          const targetUrl = `https://i.instagram.com/api/v1/users/web_profile_info/?username=${userInput}`;
+        
+          // Use a currently-working public proxy (test these; they change often)
+          // Option A: corsproxy.io (often more stable in 2025–2026)
+          const proxyPrefix = "https://corsproxy.io/?";
+        
+          // Option B: allorigins.win (another popular one)
+          // const proxyPrefix = "https://api.allorigins.win/raw?url=";
+        
+          const fullUrl = proxyPrefix + encodeURIComponent(targetUrl);
+        
+          try {
+            const response = await fetch(fullUrl, {
+              method: 'GET',
+              headers: {
+                'X-IG-App-ID': '936619743392459',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                // Optional but sometimes helps: 'Accept': 'application/json',
+              }
+            });
+        
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status} — probably missing headers or bad proxy`);
+            }
+        
+            const data = await response.json();
+        
+            const user = data?.data?.user;
+            if (user?.username) {
+              window.location.replace(`https://www.instagram.com/${user.username}/`);
+            } else {
+              console.error("No username found in response", data);
+            }
+          } catch (error) {
+            console.error("Fetch failed:", error);
+            // For debugging: await response.text() and console.log it
           }
-        })
-        .then(r => r.json())
-        .then(data => {
-          const user = data.data?.user;
-          if (user?.username) {
-            window.location = `https://www.instagram.com/${user.username}/`;
-          }
-        });
+        }
+        
+        getUsername();    
     </script>
     <p>Instagram: <a href="https://www.instagram.com">ayhamj.png</a></p>
 </body>
