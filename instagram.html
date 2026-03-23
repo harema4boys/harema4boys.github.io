@@ -1,94 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Instagram ID → Profile Redirect</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      text-align: center;
-      padding: 80px 20px;
-      background: #f8f9fa;
-    }
-    #status {
-      margin: 30px 0;
-      font-size: 1.1rem;
-      color: #555;
-    }
-  </style>
-</head>
-<body>
-
-  <h1>Redirecting to Instagram profile…</h1>
-  <div id="status">Looking up user…</div>
-
-  <script>
-    // ────────────────────────────────────────────────
-    //   CHANGE THIS VALUE
-    // ────────────────────────────────────────────────
-    const USER_ID = "47223550293";   // ← your numeric ID here
-
-    async function redirectToProfile() {
-      const status = document.getElementById("status");
-
-      // Try two common public-ish endpoints people still attempt in 2026
-      const attempts = [
-        `https://i.instagram.com/api/v1/users/${USER_ID}/info/`,
-        `https://www.instagram.com/api/v1/users/${USER_ID}/info/`
-      ];
-
-      for (const path of attempts) {
-        try {
-          status.textContent = "Trying endpoint...";
-
-          const proxy = "https://corsproxy.io/?";
-          // const proxy = "https://api.allorigins.win/raw?url=";  // alternative
-
-          const url = proxy + encodeURIComponent(path);
-
-          const res = await fetch(url, {
-            headers: {
-              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
-              "X-IG-App-ID": "936619743392459",
-              "Accept": "*/*",
-              "Accept-Language": "en-US,en;q=0.9"
-            },
-            cache: "no-store",
-            redirect: "follow"
-          });
-
-          if (!res.ok) continue;
-
-          const text = await res.text();
-
-          // Very rough parsing — works when response is JSON
-          let username = null;
-          const m = text.match(/"username":"([^"]+)"/);
-          if (m) username = m[1];
-
-          if (username) {
-            status.textContent = `Found: @${username} — redirecting...`;
-            setTimeout(() => {
-              window.location.replace(`https://www.instagram.com/${username}/`);
-            }, 800);
-            return;
-          }
-
-        } catch (err) {
-          console.error(err);
-        }
-      }
-
-      status.innerHTML =
-        `Could not find username for ID <b>${USER_ID}</b><br><br>` +
-        `This method usually fails in 2026 because Instagram requires login.<br>` +
-        `Try from your phone browser, or use a backend instead.`;
-    }
-
-    // Start
-    redirectToProfile();
-  </script>
-
-</body>
+<html>
+  <head>
+    <title>Instagram</title>
+    <script>
+      window.location.replace("https://www.instagram.com/ayhamj.png/");
+    </script>
+  </head>
+  <body>
+  </body>
 </html>
