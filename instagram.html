@@ -10,10 +10,11 @@
         // --- END CONFIGURATION ---
 
         async function getUsername() {
-            // FIXED: Added missing '$' and the required '/api/v1/users/' path
-            const targetUrl = `https://i.instagram.com{USER_ID}/info/`;
+            // FIXED: Added '$' for variable and full API path
+            const targetUrl = `https://i.instagram.com/api/v1/users/${USER_ID}/info/`;
             
-            const proxyUrl = `https://api.allorigins.win{encodeURIComponent(targetUrl)}`;
+            // FIXED: Corrected the AllOrigins URL syntax to include /get?url=
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
 
             try {
                 const response = await fetch(proxyUrl);
@@ -21,11 +22,12 @@
 
                 const data = await response.json();
                 
+                // AllOrigins wraps the result in a 'contents' string, parse it here
                 const igData = JSON.parse(data.contents);
                 
                 if (igData.user && igData.user.username) {
                     const username = igData.user.username;
-                    // FIXED: Added missing '$'
+                    // FIXED: Added '$'
                     const profileLink = `https://www.instagram.com/${username}/`;
                     window.location.replace(profileLink);
                 } else {
@@ -34,11 +36,11 @@
             } catch (error) {
                 console.error("Error details:", error);
             }
-        } // FIXED: Added missing closing brace for the function
+        }
 
         // Run on page load
         getUsername();
     </script>
-  <p>Instagram: <a href="https://www.instagram.com">ayhamj.png</a></p>
+  <p>Instagram: <a href="https://www.instagram.com/ayhamj.png/">ayhamj.png</a></p>
 </body>
 </html>
