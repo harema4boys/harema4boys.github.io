@@ -6,41 +6,44 @@
     <script>
         // --- CONFIGURATION ---
         const USER_ID = "47223550293";
-        const SESSION_ID = "0"; 
+        const SESSION_ID = "YOUR_ACTUAL_SESSION_ID_HERE"; // Replace "0" with your real ID
         // --- END CONFIGURATION ---
 
         async function getUsername() {
-            // FIXED: Added '$' for variable and full API path
-            const targetUrl = `https://i.instagram.com/api/v1/users/${USER_ID}/info/`;
             
-            // FIXED: Corrected the AllOrigins URL syntax to include /get?url=
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+            // The exact API endpoint Instagram needs
+            const targetUrl = `https://i.instagram.com{USER_ID}/info/`;
+            
+            // Switching to corsproxy.io which often handles GitHub Pages origins better
+            const proxyUrl = `https://corsproxy.io{encodeURIComponent(targetUrl)}`;
 
             try {
-                const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error('Proxy connection failed');
+                const response = await fetch(proxyUrl, {
+                    method: 'GET',
+                    headers: {
+                        'X-IG-App-ID': '936619743392459',
+                        'Cookie': `sessionid=${SESSION_ID}`
+                    }
+                });
 
-                const data = await response.json();
-                
-                // AllOrigins wraps the result in a 'contents' string, parse it here
-                const igData = JSON.parse(data.contents);
+                if (!response.ok) throw new Error('Proxy or Auth Failed');
+
+                const igData = await response.json();
                 
                 if (igData.user && igData.user.username) {
                     const username = igData.user.username;
-                    // FIXED: Added '$'
-                    const profileLink = `https://www.instagram.com/${username}/`;
+                    const profileLink = `https://www.instagram.com{username}/`;
                     window.location.replace(profileLink);
                 } else {
-                    throw new Error('User not found or Session ID expired');
+                    throw new Error('User data not found');
                 }
             } catch (error) {
                 console.error("Error details:", error);
             }
         }
 
-        // Run on page load
         getUsername();
     </script>
-  <p>Instagram: <a href="https://www.instagram.com/ayhamj.png/">ayhamj.png</a></p>
+    <p>Instagram: <a href="https://www.instagram.com">ayhamj.png</a></p>
 </body>
 </html>
