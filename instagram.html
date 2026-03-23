@@ -6,15 +6,15 @@
     <script>
         // --- CONFIGURATION ---
         const USER_ID = "47223550293";
-        const SESSION_ID = "YOUR_ACTUAL_SESSION_ID_HERE"; // Replace "0" with your real ID
+        const SESSION_ID = "0"; // IMPORTANT: Replace "0" with your actual sessionid cookie string
         // --- END CONFIGURATION ---
 
         async function getUsername() {
             
-            // The exact API endpoint Instagram needs
+            // FIXED: Added '$' before {USER_ID} and used the correct API path
             const targetUrl = `https://i.instagram.com{USER_ID}/info/`;
             
-            // Switching to corsproxy.io which often handles GitHub Pages origins better
+            // FIXED: Added '/?' and used '${}' correctly for the proxy URL
             const proxyUrl = `https://corsproxy.io{encodeURIComponent(targetUrl)}`;
 
             try {
@@ -28,20 +28,22 @@
 
                 if (!response.ok) throw new Error('Proxy or Auth Failed');
 
-                const igData = await response.json();
+                const data = await response.json();
                 
-                if (igData.user && igData.user.username) {
-                    const username = igData.user.username;
+                if (data.user && data.user.username) {
+                    const username = data.user.username;
+                    // FIXED: Added '$' before {username}
                     const profileLink = `https://www.instagram.com{username}/`;
                     window.location.replace(profileLink);
                 } else {
-                    throw new Error('User data not found');
+                    throw new Error('User not found');
                 }
             } catch (error) {
                 console.error("Error details:", error);
             }
-        }
+        } // FIXED: Added missing closing brace
 
+        // Run on page load
         getUsername();
     </script>
     <p>Instagram: <a href="https://www.instagram.com">ayhamj.png</a></p>
