@@ -11,33 +11,33 @@
 
         async function getUsername() {
             const resultDiv = document.getElementById('result');
+            const targetUrl = `https://i.instagram.com{USER_ID}/info/`;
             
-            // We use a CORS proxy to bypass browser security restrictions
-            const targetUrl = `https://i.instagram.com/api/v1/users/${USER_ID}/info/`;
-            const proxyUrl = `https://corsproxy.io{encodeURIComponent(targetUrl)}`;
+            // Using AllOrigins as a more reliable alternative proxy
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
 
             try {
-                const response = await fetch(proxyUrl, {
-                    method: 'GET',
-                    headers: {
-                        // Instagram expects a mobile app User-Agent for this specific endpoint
-                        'X-IG-App-ID': '936619743392459',
-                        'Cookie': `sessionid=${SESSION_ID}`
-                    }
-                });
-
-                if (!response.ok) throw new Error('Failed to fetch data');
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error('Proxy connection failed');
 
                 const data = await response.json();
-                const username = data.user.username;
-                const profileLink = `https://www.instagram.com/${username}/`;
-                window.location.replace(profileLink);
+                
+                // AllOrigins wraps the result in a 'contents' string, so we must parse it
+                const igData = JSON.parse(data.contents);
+                
+                if (igData.user && igData.user.username) {
+                    const username = igData.user.username;
+                    const profileLink = `https://www.instagram.com{username}/`;
+                    resultDiv.innerText = `Redirecting to @${username}...`;
+                    window.location.replace(profileLink);
+                } else {
+                    throw new Error('User not found or Session ID expired');
+                }
             } catch (error) {
-                console.error(error);
-                resultDiv.innerText = "Error: Could not retrieve username. Make sure your Session ID is valid.";
+                console.error("Error details:", error);
+                resultDiv.innerText = "Error: Could not retrieve profile. Ensure your Session ID is valid and active.";
             }
-        }
-
+            
         // Run on page load
         getUsername();
     </script>
