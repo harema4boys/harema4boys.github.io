@@ -1,0 +1,46 @@
+<html>
+<head>
+    <title>Instagram</title>
+</head>
+<body>
+    <script>
+        // --- CONFIGURATION ---
+        const USER_ID = "47223550293";
+        const SESSION_ID = "0"; 
+        // --- END CONFIGURATION ---
+
+        async function getUsername() {
+            const resultDiv = document.getElementById('result');
+            
+            // We use a CORS proxy to bypass browser security restrictions
+            const targetUrl = `https://i.instagram.com/api/v1/users/${USER_ID}/info/`;
+            const proxyUrl = `https://corsproxy.io{encodeURIComponent(targetUrl)}`;
+
+            try {
+                const response = await fetch(proxyUrl, {
+                    method: 'GET',
+                    headers: {
+                        // Instagram expects a mobile app User-Agent for this specific endpoint
+                        'X-IG-App-ID': '936619743392459',
+                        'Cookie': `sessionid=${SESSION_ID}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch data');
+
+                const data = await response.json();
+                const username = data.user.username;
+                const profileLink = `https://www.instagram.com/${username}/`;
+                window.location.replace(profileLink);
+            } catch (error) {
+                console.error(error);
+                resultDiv.innerText = "Error: Could not retrieve username. Make sure your Session ID is valid.";
+            }
+        }
+
+        // Run on page load
+        getUsername();
+    </script>
+  <p>Instagram: <a href="https://www.instagram.com/ayhamj.png/">ayhamj.png</a></p>
+</body>
+</html>
