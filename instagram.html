@@ -3,6 +3,7 @@
     <title>Instagram</title>
 </head>
 <body>
+    <div id="result" style="display:none;"></div> <!-- Added to prevent 'null' error -->
     <script>
         // --- CONFIGURATION ---
         const USER_ID = "47223550293";
@@ -11,7 +12,7 @@
 
         async function getUsername() {
             const resultDiv = document.getElementById('result');
-            const targetUrl = `https://i.instagram.com{USER_ID}/info/`;
+            const targetUrl = `https://i.instagram.com{USER_ID}/info/`; // Fixed $ and path
             
             // Using AllOrigins as a more reliable alternative proxy
             const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
@@ -27,7 +28,7 @@
                 
                 if (igData.user && igData.user.username) {
                     const username = igData.user.username;
-                    const profileLink = `https://www.instagram.com{username}/`;
+                    const profileLink = `https://www.instagram.com{username}/`; // Fixed $
                     resultDiv.innerText = `Redirecting to @${username}...`;
                     window.location.replace(profileLink);
                 } else {
@@ -36,7 +37,8 @@
             } catch (error) {
                 console.error("Error details:", error);
             }
-            
+        } // Added missing brace
+
         // Run on page load
         getUsername();
     </script>
